@@ -17,7 +17,6 @@ const client = new Client({
 
 
 
-
 // Middleware pour gérer les données POST
 app.use(bodyParser.json());
 
@@ -875,6 +874,127 @@ WHERE
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+// SELECT HARD
+
+// -Afficher la liste des chambres qui seront libres (au moins pour un jour) la semaine prochaine
+app.get('/room_will_avalaible', async (_req, res) => {
+  try {
+    const query = `
+    SELECT
+    r.id_room,
+    r.number,
+    r.room_type,
+    h.hotel_name
+FROM
+    room r
+    JOIN hotel h ON r.id_hotel = h.id_hotel
+WHERE
+    r.id_room NOT IN (
+        SELECT
+            id_room
+        FROM
+            reservation
+        WHERE
+            date_arrived >= CURRENT_DATE + INTERVAL '7 days' -- Date de début de la semaine prochaine
+            AND leaving_date <= CURRENT_DATE + INTERVAL '13 days' -- Date de fin de la semaine prochaine
+    );
+    `;
+
+    const result = await client.query(query);
+    const room_will_avalaible = result.rows;
+
+    res.json(room_will_avalaible);
+  } catch (err) {
+    console.error('Erreur lors de l\'exécution de la requête :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// --Afficher la liste des chambres libres sur une certaine période, en précisant leur hotel. (mbola tsy mety)
+app.get('/room_avalaible_period', async (_req, res) => {
+  try {
+    const query = `
+    SELECT r.id_room, r.number, r.room_type, h.hotel_name FROM room r JOIN hotel h ON r.id_hotel = h.id_hotel WHERE r.id_room NOT IN ( SELECT id_room FROM reservation WHERE date_arrived <= 'YYYY-MM-DD'::DATE -- Date de départ de la période recherchée 
+    AND leaving_date >= 'YYYY-MM-DD'::DATE -- Date d'arrivée de la période recherchée);
+    `;
+    promotion_total_revision
+    const result = await client.query(query);
+    const room_avalaible_period = result.rows;
+
+    res.json(room_avalaible_period);
+  } catch (err) {
+    console.error('Erreur lors de l\'exécution de la requête :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// -- Pour chaque promotion, afficher le nombre total de reservations qui ont bénéficié de la promotion, par hotel (pour savoir si ça a marché ou non)
+app.get('/promotion_total_revision', async (_req, res) => {
+  try {
+    const query = `
+    SELECT
+    p.id_promotion,
+    p.name AS promotion_name,
+    h.id_hotel,
+    h.hotel_name,
+    COUNT(*) AS total_reservations
+FROM
+    promotion p
+    INNER JOIN have hv ON p.id_promotion = hv.id_promotion
+    INNER JOIN room r ON hv.id_room = r.id_room
+    INNER JOIN reservation res ON r.id_room = res.id_room
+    INNER JOIN hotel h ON r.id_hotel = h.id_hotel
+GROUP BY
+    p.id_promotion,
+    p.name,
+    h.id_hotel,
+    h.hotel_name
+ORDER BY
+    p.id_promotion;
+    `;
+
+    const result = await client.query(query);
+    const promotion_total_revision = result.rows;
+      } catch (err) {
+    console.error('Erreur lors de l\'exécution de la requête :', err);
+    res.status(500).send('<h1>Erreur serveur</h1>');
+  }
+});
+
+// Afficher la liste des hotels qui ont des chambres libres sur une période demandée par l'utilisateur (mbola tsy mety)
+app.get('/room_period', async (_req, res) => {
+  try {
+    const query = `
+
+    SELECT
+    h.id_hotel,
+    h.hotel_name
+FROM
+    hotel h
+    JOIN room r ON h.id_hotel = r.id_hotel
+WHERE
+    r.id_room NOT IN (
+        SELECT
+            id_room
+        FROM
+            reservation
+        WHERE
+            date_arrived <= 'YYYY-MM-DD'::DATE -- Date de départ de la période recherchée
+            AND leaving_date >= 'YYYY-MM-DD'::DATE -- Date d'arrivée de la période recherchée
+    );
+    `;
+
+    const result = await client.query(query);
+    const room_period = result.rows;
+
+    res.json(room_period);
+  } catch (err) {
+    console.error('Erreur lors de l\'exécution de la requête :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 
 
 // Démarrez le serveur
