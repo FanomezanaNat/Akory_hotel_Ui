@@ -5,13 +5,15 @@ const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
+const password = process.env.PGPASSWORD || 'fanomezana';
+
 
 // Configuration de la connexion à la base de données PostgreSQL
 const client = new Client({
   user: 'postgres',
   host: 'localhost',
   database: 'backend',
-  password: 'fanomezana',
+  password: password,
   port: 5432,
 });
 
