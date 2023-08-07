@@ -1,10 +1,11 @@
-    function checkCredentials() {
+
+function checkCredentials() {
         const email = document.getElementById('email-field').value;
         const password = document.getElementById('password-field').value;
         if (email.includes('admin') && password === 'admin') {
-            window.location.href = '../Akory_hotel_Ui/public/dashboard/pages/dashboard.html';
+            window.location.assign ('./dashboard/template/index.html')
         } else if ( email.includes("client")){
-            window.location.href = '../Akory_hotel_Ui/public/index.html'
+            window.location.assign('./index.html')
         }   
          else {
             document.getElementById('error-message').style.display = 'block';
