@@ -12,8 +12,8 @@ const password = process.env.PGPASSWORD || 'fanomezana';
 const client = new Client({
   user: 'postgres',
   host: 'localhost',
-  database: 'akory',
-  password: 'harizo123',
+  database: 'backend',
+  password: 'fanomezana',
   port: 5432,
 });
 
