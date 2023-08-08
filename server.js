@@ -12,8 +12,8 @@ const password = process.env.PGPASSWORD || 'fanomezana';
 const client = new Client({
   user: 'postgres',
   host: 'localhost',
-  database: 'backend',
-  password: password,
+  database: 'akory',
+  password: 'harizo123',
   port: 5432,
 });
 
@@ -33,6 +33,21 @@ client.connect()
 
 // Définir le dossier des fichiers statiques
 app.use(express.static(path.join(__dirname, 'public')));
+
+//affichage de tous les reservation
+app.get('/reservation', (_req, res) => {
+  const selectSQL = 'SELECT * FROM reservation';
+  client.query(selectSQL)
+    .then((result) => {
+      const reservation = result.rows;
+      res.json(reservation);
+    })
+    .catch((err) => {
+      console.error('Erreur lors de la récupération des données:', err);
+      res.status(500).send('Erreur lors de la récupération des données');
+    });
+});
+
 
 // Route pour récupérer toutes les données de la table province_available en GET
 app.get('/provinces', (_req, res) => {

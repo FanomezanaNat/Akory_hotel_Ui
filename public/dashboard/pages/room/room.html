@@ -439,6 +439,7 @@
                           <th>Status</th>
                         </tr>
                       </thead>
+                      <tbody id="receptionnistData"></tbody>
                       <tbody>
                         <tr>
                           <td>Jacob</td>
@@ -530,6 +531,10 @@
                 </div>
               </div>
             </div>
+
+            <button class="btn btn-primary" onclick="afficherChambres()">All rooms</button>
+            <div id="conteneurChambres"></div>
+
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
@@ -709,6 +714,7 @@
   </div>
   <!-- container-scroller -->
   <!-- plugins:js -->
+  <script src="room.js"></script>
   <script src="../../vendors/js/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page -->
